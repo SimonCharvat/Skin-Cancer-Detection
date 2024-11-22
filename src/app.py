@@ -1,39 +1,55 @@
-
-import logging
-import io
 import streamlit as st
+from transformers import AutoImageProcessor, AutoModelForImageClassification
+from PIL import Image
+import torch
 
+# Set up the Streamlit page
+st.set_page_config(page_title="Skincare Recognition", page_icon="🔬")
 
-def main():
+# Load the model and processor
+@st.cache_resource
+def load_model():
+    processor = AutoImageProcessor.from_pretrained("Anwarkh1/Skin_Cancer-Image_Classification")
+    model = AutoModelForImageClassification.from_pretrained("Anwarkh1/Skin_Cancer-Image_Classification")
+    return processor, model
 
-    # Title of the page
-    st.title("Skin cancer recognition")
+processor, model = load_model()
 
-    # Display a text
-    st.write("This all uses machine learning model to detect skin cancer based on provided image")
+st.title("Skincare Recognition Model")
 
-    uploaded_file_data = st.file_uploader("Import photo of your skin issue", type=["jpg", "jpge", "png"], accept_multiple_files=False)
+# File uploader
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
+if uploaded_file is not None:
+    # Display the uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    if uploaded_file_data is not None:
-        file_details = {
-            "File name": uploaded_file_data.name,
-            "File type": uploaded_file_data.type,
-            "File size": uploaded_file_data.size,
-        }
+    # Make a prediction
+    inputs = processor(images=image, return_tensors="pt")
+    outputs = model(**inputs)
+    logits = outputs.logits
 
-        # Display file details
-        st.write("### File Details")
-        st.json(file_details)
+    # Get the predicted class
+    predicted_class_idx = torch.argmax(logits, dim=1).item()
+    predicted_class = model.config.id2label[predicted_class_idx]
 
-        bytes_data = uploaded_file_data.read()
-        st.write("filename:", uploaded_file_data.name)
-        st.write(bytes_data)
+    # Display the prediction
+    st.subheader("Prediction:")
+    st.write(f"The model predicts this image is: **{predicted_class}**")
 
+    # Display confidence scores
+    st.subheader("Confidence Scores:")
+    probs = torch.nn.functional.softmax(logits, dim=1)
+    for i, p in enumerate(probs[0]):
+        st.write(f"{model.config.id2label[i]}: {p.item():.2%}")
 
+# Add some information about the model
+st.sidebar.header("About")
+st.sidebar.write("""
+This application uses a pre-trained model from Hugging Face for skin cancer image classification.
+The model can identify various types of skin conditions based on the uploaded image.
 
-if __name__ == '__main__':
-    logging.debug("Starting python...")
-    main()
-
+Please note that this is not a substitute for professional medical advice. Always consult with a healthcare professional for proper diagnosis and treatment.
+""")
 
