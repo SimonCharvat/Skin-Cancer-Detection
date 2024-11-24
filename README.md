@@ -1,64 +1,121 @@
-Example plain HTML site using GitLab Pages.
+# Skin Cancer Classification MLOPS Project
 
-Learn more about GitLab Pages at https://pages.gitlab.io and the official
-documentation https://docs.gitlab.com/ce/user/project/pages/.
+This project uses a machine learning model to classify skin cancer types based on input images. The application is containerized using Docker for easy deployment and scalability.
 
----
+## Table of Contents
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+1. [Prerequisites](#prerequisites)
+2. [Downloading the Project](#downloading-the-project)
+3. [Installation](#installation)
+4. [Running the Application Locally](#running-the-application-locally)
+5. [Building the Docker Image](#building-the-docker-image)
+6. [Running the Docker Container](#running-the-docker-container)
+7. [Usage](#usage)
+8. [Troubleshooting](#troubleshooting)
 
-- [GitLab CI](#gitlab-ci)
-- [GitLab User or Group Pages](#gitlab-user-or-group-pages)
-- [Did you fork this project?](#did-you-fork-this-project)
-- [Troubleshooting](#troubleshooting)
+## Prerequisites
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+Before you begin, ensure you have the following installed on your system:
 
-## GitLab CI
+- Git
+- Python 3.8 or higher
+- pip (Python package manager)
+- Docker
 
-This project's static Pages are built by [GitLab CI][ci], following the steps
-defined in [`.gitlab-ci.yml`](.gitlab-ci.yml):
+## Downloading the Project
+
+1. Open your terminal or command prompt.
+2. Clone the repository from GitLab using the following command:
+
+   ```
+   git clone https://gitlab.com/zidi_nonplus_ultra/mlops.git
+   ```
+
+ 
+
+3. Navigate to the project directory:
+
+   ```
+   cd your-project-name
+   ```
+
+## Installation
+
+1. Create a virtual environment (optional but recommended):
+
+   ```
+   python -m venv venv
+   ```
+
+2. Activate the virtual environment:
+
+   - On Windows:
+     ```
+     venv\\Scripts\\activate
+     ```
+   - On macOS and Linux:
+     ```
+     source venv/bin/activate
+     ```
+
+3. Install the required dependencies:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+## Running the Application Locally
+
+To run the application locally without Docker, use the following command:
 
 ```
-image: busybox
-
-pages:
-  stage: deploy
-  script:
-  - echo 'Nothing to do...'
-  artifacts:
-    paths:
-    - public
-    expire_in: 1 day
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+python src/run_app.py
 ```
 
-The above example expects to put all your HTML files in the `public/` directory.
+The application should now be running on `http://localhost:8500/8501` (or another port if specified in the code).
 
-## GitLab User or Group Pages
+## Building the Docker Image
 
-To use this project as your user/group website, you will need one additional
-step: just rename your project to `namespace.gitlab.io`, where `namespace` is
-your `username` or `groupname`. This can be done by navigating to your
-project's **Settings**.
+1. Ensure you are in the project root directory.
+2. Build the Docker image using the following command:
 
-Read more about [user/group Pages][userpages] and [project Pages][projpages].
+   ```
+   docker build -t project .
+   ```
 
-## Did you fork this project?
+   This command builds a Docker image with the tag `project`.
 
-If you forked this project for your own use, please go to your project's
-**Settings** and remove the forking relationship, which won't be necessary
-unless you want to contribute back to the upstream project.
+## Running the Docker Container
+
+After building the Docker image, you can run the container using the following command:
+
+```
+docker run -p 8501:8501 project
+```
+
+This command does the following:
+- `-p 8501:8501`: Maps port 8501 of the container to port 8501 on your host machine.
+- `project`: Specifies the image to use for creating the container.
+
+The application should now be accessible at `http://localhost:8501`.
+
+## Usage
+
+1. Open a web browser and navigate to `http://localhost:8501`.
+2. Upload an image of a skin lesion using the provided interface.
+3. Click the "Classify" button to get the prediction result.
 
 ## Troubleshooting
 
-1. CSS is missing! That means that you have wrongly set up the CSS URL in your
-   HTML files. Have a look at the [index.html] for an example.
+If you encounter any issues, try the following steps:
 
-[ci]: https://about.gitlab.com/gitlab-ci/
-[index.html]: https://gitlab.com/pages/plain-html/blob/master/public/index.html
-[userpages]: https://docs.gitlab.com/ce/user/project/pages/introduction.html#user-or-group-pages
-[projpages]: https://docs.gitlab.com/ce/user/project/pages/introduction.html#project-pages
+1. Ensure all prerequisites are correctly installed.
+2. Check that you're using the correct Python version.
+3. Verify that all required ports are available and not in use by other applications.
+4. If using Docker, make sure the Docker daemon is running.
+
+For any persistent problems, please open an issue on the GitLab repository.
+
+```
+
+This README provides a comprehensive guide for users to download, install, and run your skin cancer classification MLOPS project, both locally and using Docker. It includes detailed steps for each process and a troubleshooting section to help users resolve common issues. You may want to customize some parts of this README to better fit your specific project structure and requirements.
