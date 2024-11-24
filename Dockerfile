@@ -2,19 +2,21 @@
 FROM python:3.9-slim
 
 # Set the working directory in the container
-WORKDIR /src
+WORKDIR /app
 
-# Copy the required library list from the local machine to the container
+# Copy only the requirements file first to leverage Docker cache
 COPY requirements.txt .
 
-# Install all the Python libraries
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install -r requirements.txt
 
-# Copy the app code to the container
-COPY src/ .
+# Copy only the necessary source code
+# This will respect .dockerignore and exclude unnecessary files
+COPY src/app.py .
 
 # Set the exposed port for Streamlit (default 8501)
 EXPOSE 8501
 
 # Command to execute the Python script
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app.py", "--server.port=8501"]
+
