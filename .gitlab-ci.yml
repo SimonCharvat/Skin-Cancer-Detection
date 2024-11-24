@@ -1,7 +1,24 @@
-# This file is a template, and might need editing before it works on your project.
-# Full project: https://gitlab.com/pages/plain-html
+image: docker:20.10.16
 
-image: busybox
+services:
+  - docker:20.10.16-dind
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker build -t my-site-image .
+    - docker run --name my-site-container my-site-image
+    - docker cp my-site-container:/app/public ./public
+  artifacts:
+    paths:
+      - public
 
 pages:
   stage: deploy
