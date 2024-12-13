@@ -14,8 +14,11 @@ build:
   stage: build
   script:
     - docker build -t my-site-image .
-    - docker run --name my-site-container my-site-image
+    - docker run -d --name my-site-container --entrypoint sleep my-site-image 3600
+    - docker exec my-site-container ls /app/public # Debug: Verify directory
     - docker cp my-site-container:/app/public ./public
+    - docker stop my-site-container
+    - docker rm -f my-site-container
   artifacts:
     paths:
       - public
