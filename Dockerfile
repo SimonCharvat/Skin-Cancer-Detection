@@ -14,9 +14,11 @@ RUN pip install -r requirements.txt
 # This will respect .dockerignore and exclude unnecessary files
 COPY src/app.py .
 
+# Create the public directory
+RUN mkdir -p /app/public
+
 # Set the exposed port for Streamlit (default 8501)
 EXPOSE 8501
 
 # Command to execute the Python script
 CMD ["streamlit", "run", "app.py", "--server.port=8501"]
-
