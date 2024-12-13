@@ -14,8 +14,10 @@ build:
   stage: build
   script:
     - docker build -t my-site-image .
-    - docker run --name my-site-container my-site-image
+    - docker run -d --name my-site-container my-site-image
     - docker cp my-site-container:/app/public ./public
+    - docker stop my-site-container
+    - docker rm my-site-container
   artifacts:
     paths:
       - public
