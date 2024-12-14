@@ -5,13 +5,14 @@ This project uses a machine learning model to classify skin cancer types based o
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)
-2. [Downloading the Project](#downloading-the-project)
-3. [Installation](#installation)
-4. [Running the Application Locally](#running-the-application-locally)
-5. [Building the Docker Image](#building-the-docker-image)
-6. [Running the Docker Container](#running-the-docker-container)
-7. [Usage](#usage)
-8. [Troubleshooting](#troubleshooting)
+2. [Accessing the Container Image](#accessing-the-container-image)
+3. [Downloading the Project](#downloading-the-project)
+4. [Installation](#installation)
+5. [Running the Application Locally](#running-the-application-locally)
+6. [Building the Docker Image](#building-the-docker-image)
+7. [Running the Docker Container](#running-the-docker-container)
+8. [Usage](#usage)
+9. [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
@@ -21,6 +22,51 @@ Before you begin, ensure you have the following installed on your system:
 - Python 3.8 or higher
 - pip (Python package manager)
 - Docker
+
+
+## Accessing the Container Image
+
+The container image is stored in the GitLab Container Registry. To access it, follow these steps:
+
+1. Navigate to **Deploy** -> **Container Registry** in this GitLab project.
+2. Find the container image you need.
+
+### Example: Pulling the Docker Image
+
+To pull the Docker image from the GitLab Container Registry, use the following command:
+
+```bash
+# Replace <project-path>, <tag>, and <token> as necessary
+$ docker login registry.gitlab.com -u <your-username> -p <your-personal-access-token>
+$ docker pull registry.gitlab.com/<group>/<project-name>:<tag>
+```
+
+#### Explanation of the Command:
+- `registry.gitlab.com`: This is the GitLab container registry URL.
+- `<group>/<project-name>`: Replace this with the namespace and name of this GitLab project.
+- `<tag>`: Replace this with the specific image tag you want to pull.
+
+#### Example with Values:
+
+For a image with the following details:
+- Group: `mygroupname`
+- Project name: `Mlops`
+- Tag: `master-e04e8837`
+
+Run:
+
+```bash
+$ docker login registry.gitlab.com -u myusername -p myaccesstoken
+$ docker pull registry.gitlab.com/mygroupname/Mlops:master-e04e8837
+```
+
+#### Additional Notes
+- Ensure you have the correct permissions to access the registry.
+- You can generate a personal access token from your GitLab account settings to authenticate the Docker CLI.
+
+For more information, refer to the official [GitLab Container Registry documentation](https://docs.gitlab.com/ee/user/packages/container_registry/).
+
+
 
 ## Downloading the Project
 
@@ -115,7 +161,3 @@ If you encounter any issues, try the following steps:
 4. If using Docker, make sure the Docker daemon is running.
 
 For any persistent problems, please open an issue on the GitLab repository.
-
-```
-
-This README provides a comprehensive guide for users to download, install, and run your skin cancer classification MLOPS project, both locally and using Docker. It includes detailed steps for each process and a troubleshooting section to help users resolve common issues. You may want to customize some parts of this README to better fit your specific project structure and requirements.

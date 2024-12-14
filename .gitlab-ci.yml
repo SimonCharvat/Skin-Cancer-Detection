@@ -4,31 +4,42 @@ services:
   - docker:20.10.16-dind
 
 variables:
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/streamlit_app
+  IMAGE_TAG: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}" # Tag = branch_name-commit_hash
 
 stages:
-  - build
-  - deploy
+  - test
+  - build_push
 
-build:
-  stage: build
-  script:
-    - docker build -t my-site-image .
-    - docker run -d --name my-site-container --entrypoint sleep my-site-image 3600
-    - docker exec my-site-container ls /app/public # Debug: Verify directory
-    - docker cp my-site-container:/app/public ./public
-    - docker stop my-site-container
-    - docker rm -f my-site-container
-  artifacts:
+# Run Python tests via PyTest
+test:
+  stage: test
+  image: python:3.9-slim  # Use a Python image
+  cache: # Share cache to prevent repeated download of python packages
+    key: "$CI_COMMIT_REF_SLUG"
     paths:
-      - public
+      - .cache/pip  # Cache pip dependencies
+  script:
+    - pip install --cache-dir=.cache/pip -r requirements.txt  # Install dependencies
+    - pytest ./src/test_app.py # Run the tests
 
-pages:
-  stage: deploy
+
+# Build Docker image and push to Container Registery
+build_push:
+  stage: build_push
+  before_script:
+    - echo "Waiting for Docker services to initialize..."
+    - sleep 2 # Wait 2 seconds for DinD to initialize
+    - docker info
   script:
-    - echo "The site will be deployed to $CI_PAGES_URL"
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - echo "Logging into GitLab container registry..."
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY # Authorize for registry
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG . # Build the docker image
+    - echo "Image built successfully"
+    - docker images # List avaliable images for debugging
+    - echo "Pushing Docker image to GitLab container registry..."
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+

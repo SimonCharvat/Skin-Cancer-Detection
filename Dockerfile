@@ -4,18 +4,15 @@ FROM python:3.9-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy only the requirements file first to leverage Docker cache
+# Copy only the requirements file
 COPY requirements.txt .
 
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy only the necessary source code
 # This will respect .dockerignore and exclude unnecessary files
 COPY src/app.py .
-
-# Create the public directory
-RUN mkdir -p /app/public
 
 # Set the exposed port for Streamlit (default 8501)
 EXPOSE 8501
