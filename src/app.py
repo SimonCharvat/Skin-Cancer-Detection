@@ -7,7 +7,7 @@ import requests
 from io import BytesIO
 from typing import Literal
 
-
+from utils.descriptions import lesion_descriptions
 
 # Set page config
 st.set_page_config(page_title="Skin Cancer Recognition", page_icon="🔬", layout="wide")
@@ -170,8 +170,12 @@ def show_results(image, logits, predicted_class):
   st.markdown("<h3 class='text-white text-lg font-medium title-font mb-3 mt-4'>Confidence Scores:</h3>", unsafe_allow_html=True)
   probs = torch.nn.functional.softmax(logits, dim=1)
   for i, p in enumerate(probs[0]):
-      st.markdown(f"<p>{model.config.id2label[i]}: {p.item():.2%}</p>", unsafe_allow_html=True)
+      label = model.config.id2label[i]
+      st.markdown(f"<p>{label}: {p.item():.2%}</p>", unsafe_allow_html=True)
 
+      # Add a button to toggle description visibility
+      if st.button(f"Show description for {label}"):
+          st.markdown(f"**Description**: {lesion_descriptions[label]}")
 
 def handle_file_upload(file: BytesIO) -> None:
   """

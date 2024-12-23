@@ -12,10 +12,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy only the necessary source code
 # This will respect .dockerignore and exclude unnecessary files
-COPY src/app.py .
+COPY src/ ./src/
 
 # Set the exposed port for Streamlit (default 8501)
 EXPOSE 8501
 
 # Command to execute the Python script
-CMD ["streamlit", "run", "app.py", "--server.port=8501"]
+CMD ["streamlit", "run", "src/app.py", "--server.port=8501"]
