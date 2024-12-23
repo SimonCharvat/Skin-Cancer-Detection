@@ -7,7 +7,7 @@ import requests
 from io import BytesIO
 from typing import Literal
 
-from utils.descriptions import lesion_descriptions
+from utils.descriptions import lesion_descriptions, lesion_names
 
 # Set page config
 st.set_page_config(page_title="Skin Cancer Recognition", page_icon="🔬", layout="wide")
@@ -164,17 +164,27 @@ def show_results(image, logits, predicted_class):
   
   # Display the prediction
   st.markdown("<h3 class='text-white text-lg font-medium title-font mb-3'>Prediction:</h3>", unsafe_allow_html=True)
-  st.markdown(f"<p>The model predicts this image is: <strong>{predicted_class}</strong></p>", unsafe_allow_html=True)
+  st.markdown(f"<p>The model predicts this image is: <strong>{lesion_names[predicted_class]}</strong></p>", unsafe_allow_html=True)
 
   # Display confidence scores
   st.markdown("<h3 class='text-white text-lg font-medium title-font mb-3 mt-4'>Confidence Scores:</h3>", unsafe_allow_html=True)
   probs = torch.nn.functional.softmax(logits, dim=1)
   for i, p in enumerate(probs[0]):
       label = model.config.id2label[i]
-      st.markdown(f"<p>{label}: {p.item():.2%}</p>", unsafe_allow_html=True)
+      st.markdown(f"<p>{lesion_names[label]}: {p.item():.2%}</p>", unsafe_allow_html=True)
 
-      # Add a button to toggle description visibility
-      if st.button(f"Show description for {label}"):
+      # Manage button and description display using session_state
+      description_key = f"description_shown_{label}"
+
+      if description_key not in st.session_state:
+          st.session_state[description_key] = False  # Initialize the state to False (description hidden)
+
+      # Toggle button text and show/hide description in one step
+      if st.button(f"{'Show' if not st.session_state[description_key] else 'Hide'} description", key=label):
+          st.session_state[description_key] = not st.session_state[description_key]
+
+          # Display description if the state is True
+      if st.session_state[description_key]:
           st.markdown(f"**Description**: {lesion_descriptions[label]}")
 
 def handle_file_upload(file: BytesIO) -> None:

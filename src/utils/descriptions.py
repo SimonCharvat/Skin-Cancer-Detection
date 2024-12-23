@@ -28,6 +28,16 @@ lesion_descriptions = {
                       "harmless and require treatment only for cosmetic concerns."
 }
 
+lesion_names = {
+    "benign_keratosis-like_lesions": "Benign Keratosis-like Lesions",
+    "basal_cell_carcinoma": "Basal Cell Carcinoma",
+    "actinic_keratoses": "Actinic Keratoses",
+    "vascular_lesions": "Vascular Lesions",
+    "melanocytic_Nevi": "Melanocytic Nevi",
+    "melanoma": "Melanoma",
+    "dermatofibroma": "Dermatofibroma"
+}
+
 # 1. Benign Keratosis-like Lesions
 # Benign keratosis-like lesions encompass skin conditions such as seborrheic keratosis, lichen planus-like keratosis, and solar lentigo. These lesions are non-cancerous and appear as warty, rough, or pigmented growths on the skin. They are generally harmless but may resemble malignant growths, warranting careful clinical evaluation.
 # 2. Basal Cell Carcinoma
