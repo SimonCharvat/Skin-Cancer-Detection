@@ -2,6 +2,8 @@ import streamlit as st
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 from PIL import Image
 import torch
+import matplotlib.pyplot as plt
+import numpy as np
 
 import requests
 from io import BytesIO
@@ -100,7 +102,15 @@ st.markdown("""
   <div class="container px-5 py-24 mx-auto flex flex-wrap items-center">
     <div class="lg:w-3/5 md:w-1/2 md:pr-16 lg:pr-0 pr-0">
       <h1 class="title-font font-medium text-3xl text-white">Skin Cancer Recognition Model</h1>
-      <p class="leading-relaxed mt-4">Upload an image of a skin lesion to get a prediction on the type of skin condition. This tool uses advanced AI to assist in early detection and classification of skin cancer.</p>
+      <p class="leading-relaxed mt-4">
+        Upload an image of a skin lesion to get a prediction on the type of skin condition. 
+        This tool uses advanced AI to assist in early detection and classification of skin cancer.
+      </p>
+      <p class="leading-relaxed mt-4 text-yellow-400">
+        <strong>Disclaimer:</strong> This tool is designed as a self-advisory resource for skin lesion analysis. 
+        It should not be considered a substitute for professional medical advice. 
+        If you have concerns or uncertainties about your skin condition, please consult a qualified healthcare professional.
+      </p>
     </div>
     <div class="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
       <h2 class="text-white text-lg font-medium title-font mb-5">Upload Image</h2>
@@ -111,6 +121,7 @@ st.markdown("""
   </div>
 </section>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -148,6 +159,40 @@ def process_image(image: Image):
   except Exception as e:
     st.error(f"Error processing the image by the AI model: {e}")
 
+def show_plot_probabilities(labels_sorted, probs_sorted, column_color, background_color, grid_color):
+    #Change codes to readable names
+    labels_human_readable = [lesion_names[label] for label in labels_sorted]
+
+    #Change the order to have the most highest probababilities in the top
+    labels_sorted_ascending = labels_human_readable[::-1]
+    probs_sorted_ascending = probs_sorted[::-1]
+
+    # Create and display bar chart with custom styling
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Create the bar chart
+    ax.barh(labels_sorted_ascending, probs_sorted_ascending, color=column_color)
+
+    # Set dark background
+    fig.patch.set_facecolor(background_color)  # Dark background
+    ax.set_facecolor(background_color)  # Dark background for the plot
+
+    # Customize grid and axes
+    ax.grid(color=grid_color, linestyle='--', linewidth=0.5, axis='x')
+    ax.tick_params(colors=grid_color)  # White tick labels
+    for direction in ['bottom', 'left', 'top', 'right']:
+        ax.spines[direction].set_color(grid_color)
+
+    # Add labels and title with white color
+    ax.set_xlabel('Probability', color=grid_color)
+    ax.set_title('Predicted Probabilities for Each Lesion Type', color=grid_color)
+
+    # Set y-axis labels to white
+    ax.set_yticks(range(len(labels_sorted_ascending)))
+    ax.set_yticklabels(labels_sorted_ascending, color=grid_color)
+
+    # Display the chart using Streamlit
+    st.pyplot(fig)
 
 
 def show_results(image, logits, predicted_class):
@@ -176,12 +221,17 @@ def show_results(image, logits, predicted_class):
   # Get the sorted indices based on probabilities (highest to lowest)
   sorted_indices = torch.argsort(probs[0], descending=True)
 
-  for idx in sorted_indices:
-      # Get the label based on the sorted index
-      label = model.config.id2label[idx.item()]
-      prob = probs[0][idx].item()
+  # Prepare data for the bar chart
+  labels_sorted = [model.config.id2label[idx.item()] for idx in sorted_indices]
+  probs_sorted = [probs[0][idx].item() for idx in sorted_indices]
 
-      # Display the probability in percentage format
+  # Plot the probabilities
+  show_plot_probabilities(labels_sorted, probs_sorted,
+                          column_color='#10b981', background_color='#111827', grid_color='white')
+
+  # Display the probabilities in percentage format with descriptions
+  for i, label in enumerate(labels_sorted):
+      prob = probs_sorted[i]
       st.markdown(f"<p>{lesion_names[label]}: {prob:.2%}</p>", unsafe_allow_html=True)
 
       # Manage button and description display using session_state
@@ -242,12 +292,14 @@ def handle_url_input(url: str) -> None:
       st.error(f"Error fetching the image: {e}")
   except Exception as e:
       st.error(f"Error loading the image. Make sure that the URL provided is direct link to the image, not just the website containing the image.")
-    
 
 
-
-# Instructions for the user
-st.text("You can submit your image by uploading a file or by providing a direct URL to it. After inserting the image, press the submit button.")
+st.markdown(
+    """
+    <p style="color: #9CA3AF;">You can submit your image by uploading a file or by providing a direct URL to it. After inserting the image, press the submit button.</p>
+    """,
+    unsafe_allow_html=True
+)
 
 # Create two tabs (submenu)
 with st.container(key="input_container"):
