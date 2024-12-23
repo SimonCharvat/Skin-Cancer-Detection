@@ -167,11 +167,22 @@ def show_results(image, logits, predicted_class):
   st.markdown(f"<p>The model predicts this image is: <strong>{lesion_names[predicted_class]}</strong></p>", unsafe_allow_html=True)
 
   # Display confidence scores
-  st.markdown("<h3 class='text-white text-lg font-medium title-font mb-3 mt-4'>Confidence Scores:</h3>", unsafe_allow_html=True)
+  st.markdown("<h3 class='text-white text-lg font-medium title-font mb-3 mt-4'>Confidence Scores:</h3>",
+              unsafe_allow_html=True)
+
+  # Apply softmax to logits to get probabilities
   probs = torch.nn.functional.softmax(logits, dim=1)
-  for i, p in enumerate(probs[0]):
-      label = model.config.id2label[i]
-      st.markdown(f"<p>{lesion_names[label]}: {p.item():.2%}</p>", unsafe_allow_html=True)
+
+  # Get the sorted indices based on probabilities (highest to lowest)
+  sorted_indices = torch.argsort(probs[0], descending=True)
+
+  for idx in sorted_indices:
+      # Get the label based on the sorted index
+      label = model.config.id2label[idx.item()]
+      prob = probs[0][idx].item()
+
+      # Display the probability in percentage format
+      st.markdown(f"<p>{lesion_names[label]}: {prob:.2%}</p>", unsafe_allow_html=True)
 
       # Manage button and description display using session_state
       description_key = f"description_shown_{label}"
@@ -183,7 +194,7 @@ def show_results(image, logits, predicted_class):
       if st.button(f"{'Show' if not st.session_state[description_key] else 'Hide'} description", key=label):
           st.session_state[description_key] = not st.session_state[description_key]
 
-          # Display description if the state is True
+      # Display description if the state is True
       if st.session_state[description_key]:
           st.markdown(f"**Description**: {lesion_descriptions[label]}")
 
