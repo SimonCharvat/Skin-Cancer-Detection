@@ -343,9 +343,42 @@ with st.container(key="input_container"):
 # Set CSS style of the input menu (tabs)
 set_color("input_container", "grey")
 
-
 # Runs if an image has been uploaded and loaded
 if st.session_state["image"] is not None:
   # Runs image trough AI mode, shows the image preview, shows the AI prediction
   process_image(st.session_state["image"]) 
+
+st.markdown(
+    """
+    <div style="background-color: #8493af; border: 1px solid #8493af; border-radius: 5px; padding: 20px; line-height: 1.6; color: black;">
+        <h2 style="color: black; text-align: left;">Skin Cancer Prevention</h2>
+        <hr style="border: 1 px solid black; margin-top: 5px; margin-bottom: 5px;">
+        <p>
+            According to the <strong>Centers for Disease Control and Prevention (CDC)</strong>, the leading health organization in the United States, most skin cancers are caused by excessive exposure to ultraviolet (UV) rays, which damage skin cells. These harmful rays originate from sources like the sun, tanning beds, and sunlamps. 
+            To reduce your risk of developing skin cancer, it is essential to protect your skin from UV rays.
+        </p>
+        <h3 style="color: black;">Key Facts about UV Protection:</h3>
+        <ul>
+            <li>UV protection is necessary all year round—not just during the summer.</li>
+            <li>UV rays can penetrate through clouds and cool weather.</li>
+            <li>They can also reflect off surfaces such as water, cement, sand, and snow.</li>
+        </ul>
+        <h3 style="color: black;">CDC Recommendations for Skin Protection:</h3>
+        <ol>
+            <li><strong>Stay in the shade</strong> whenever possible, especially during midday hours when the sun’s rays are strongest.</li>
+            <li><strong>Wear protective clothing</strong> that covers your arms and legs.</li>
+            <li><strong>Use a hat with a wide brim</strong> to shield your face, head, ears, and neck.</li>
+            <li><strong>Wear sunglasses</strong> that wrap around your eyes and block both UVA and UVB rays.</li>
+            <li><strong>Apply sunscreen</strong> with a broad spectrum SPF of 15 or higher, and reapply as needed.</li>
+        </ol>
+        <p>
+            By following these steps, you can significantly lower your risk of skin cancer while maintaining healthy and protected skin year-round.
+        </p>
+        <p style="text-align: left; font-size: 12px;">
+            Source: <a href="https://www.cdc.gov/skin-cancer/prevention/index.html" style="color: blue;">CDC Skin Cancer Prevention</a>
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
