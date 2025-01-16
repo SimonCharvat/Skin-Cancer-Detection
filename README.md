@@ -26,7 +26,7 @@ Before you begin, ensure you have the following installed on your system:
 
 ## Accessing the Container Image
 
-The container image is stored in the GitLab Container Registry. To access it, follow these steps:
+The container image is stored in the GitLab Container Registry. To access it, follow these 2 steps:
 
 1. Navigate to **Deploy** -> **Container Registry** in this GitLab project.
 2. Find the container image you need.
