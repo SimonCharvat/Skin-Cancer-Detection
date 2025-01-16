@@ -74,7 +74,7 @@ For more information, refer to the official [GitLab Container Registry documenta
 2. Clone the repository from GitLab using the following command:
 
    ```
-   git clone https://gitlab.com/zidi_nonplus_ultra/mlops.git
+   git clone https://gitlab.com/skin-cancer-identifier_burj31/mlops.git
    ```
 
  
