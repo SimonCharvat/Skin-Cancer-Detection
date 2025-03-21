@@ -11,6 +11,9 @@ on:
 jobs:
   test_build_push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code
