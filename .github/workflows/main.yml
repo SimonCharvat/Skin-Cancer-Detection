@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main   # Trigger on push to the main branch
+      - master   # Trigger on push to the main branch
   pull_request:
     branches:
-      - main   # Trigger on pull request to main
+      - master   # Trigger on pull request to main
 
 jobs:
   test_and_build:
